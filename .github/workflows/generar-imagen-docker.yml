@@ -1,0 +1,33 @@
+name: Generar Imagen Docker en TAR
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-save:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Obtener el código del repositorio
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      # Construir la imagen Docker
+      - name: Construir la imagen Docker
+        run: |
+          docker build -t mi-web-docker .
+
+      # Guardar la imagen en formato TAR
+      - name: Guardar imagen como .tar
+        run: |
+          docker save -o mi-web-docker.tar mi-web-docker
+
+      # Subir el archivo TAR como artefacto
+      - name: Subir archivo .tar listo para descargar
+        uses: actions/upload-artifact@v4
+        with:
+          name: imagen-docker-tar
+          path: mi-web-docker.tar
