@@ -10,24 +10,29 @@ jobs:
   build-and-save:
     runs-on: ubuntu-latest
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
-      - name: Obtener el código
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Construir imagen Docker
+      - name: Verificar Docker
+        run: docker --version
+
+      - name: Construir imagen
         run: docker build -t mi-web-docker .
 
-      - name: Exportar imagen a TAR
-        run: docker save mi-web-docker -o mi-web-docker.tar
+      - name: Guardar imagen
+        run: docker save -o mi-web-docker.tar mi-web-docker
 
-      - name: Verificar archivo generado
+      - name: Verificar TAR
         run: |
-          ls -lh
-          file mi-web-docker.tar
+          ls -lah
+          du -h mi-web-docker.tar
 
-      - name: Subir TAR
+      - name: Subir artefacto
         uses: actions/upload-artifact@v4
         with:
           name: mi-web-docker-tar
           path: mi-web-docker.tar
-          if-no-files-found: error
